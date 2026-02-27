@@ -34,8 +34,16 @@ namespace BlazorApp1.Services
 
         public void UpdateEmployee(Employee employee)
         {
-            _context.Employees.Update(employee);
-            _context.SaveChanges();
+            var existingEmployee = _context.Employees.Find(employee.Id);
+
+            if (existingEmployee != null)
+            {
+                existingEmployee.Name = employee.Name;
+                existingEmployee.Shift = employee.Shift;
+                existingEmployee.Department = employee.Department;
+
+                _context.SaveChanges();
+            }
         }
 
         public List<Employee> GetEmployees(string searchTerm, string shift)

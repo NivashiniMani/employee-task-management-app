@@ -108,7 +108,10 @@
 
 @code {
     private List<Employee> employees = new();
-    private Employee newEmployee = new();
+    private Employee newEmployee = new Employee
+    {
+        Shift = "Morning"
+    };
     private string searchTerm = "";
     private string selectedShift = "";
     private bool isEditing = false;
@@ -125,7 +128,6 @@
 
     private void SaveEmployee()
     {
-        Console.WriteLine("Button Clicked");
         if (string.IsNullOrWhiteSpace(newEmployee.Name))
         {
             Console.WriteLine("string error");
@@ -140,10 +142,12 @@
         else
         {
             EmployeeService.AddEmployee(newEmployee);
-            Console.WriteLine("Added");
         }
-        
-        newEmployee = new Employee();
+
+        newEmployee = new Employee()
+        {
+            Shift = "Morning"
+        };
         LoadEmployees();
        
     }
