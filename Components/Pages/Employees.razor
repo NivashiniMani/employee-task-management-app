@@ -1,0 +1,169 @@
+﻿@page "/employees"  
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject IEmployeeService EmployeeService
+
+<h3 class="mb-3">Employee Management</h3>
+
+<!-- Search & Filter Section -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input class="form-control"
+               @bind="searchTerm"
+               placeholder="Search by name..." />
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-control" @bind="selectedShift">
+            <option value="">All Shifts</option>
+            <option>Morning</option>
+            <option>Evening</option>
+            <option>Night</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100"
+                @onclick="LoadEmployees">
+            Search
+        </button>
+    </div>
+</div>
+
+<!-- Employee Table -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Shift</th>
+            <th>Department</th>
+            <th style="width:180px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (employees.Any())
+        {
+            @foreach (var emp in employees)
+            {
+                <tr>
+                    <td>@emp.Name</td>
+                    <td>@emp.Shift</td>
+                    <td>@emp.Department</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm me-2"
+                                @onclick="() => EditEmployee(emp)">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger btn-sm"
+                                @onclick="() => DeleteEmployee(emp.Id)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No employees found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+
+<!-- Add / Edit Form -->
+<h5>@(isEditing ? "Edit Employee" : "Add Employee")</h5>
+
+<div class="row mb-2">
+    <div class="col-md-4">
+        <input class="form-control"
+               @bind="newEmployee.Name"
+               placeholder="Employee Name" />
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-control" @bind="newEmployee.Shift">
+            <option>Morning</option>
+            <option>Evening</option>
+            <option>Night</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <input class="form-control"
+               @bind="newEmployee.Department"
+               placeholder="Department" />
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-success w-100"
+                @onclick="SaveEmployee">
+            @(isEditing ? "Update" : "Add")
+        </button>
+    </div>
+</div>
+
+@code {
+    private List<Employee> employees = new();
+    private Employee newEmployee = new();
+    private string searchTerm = "";
+    private string selectedShift = "";
+    private bool isEditing = false;
+
+    protected override void OnInitialized()
+    {
+        LoadEmployees();
+    }
+
+    private void LoadEmployees()
+    {
+        employees = EmployeeService.GetEmployees(searchTerm, selectedShift);
+    }
+
+    private void SaveEmployee()
+    {
+        Console.WriteLine("Button Clicked");
+        if (string.IsNullOrWhiteSpace(newEmployee.Name))
+        {
+            Console.WriteLine("string error");
+            return;
+        }
+
+        if (isEditing)
+        {
+            EmployeeService.UpdateEmployee(newEmployee);
+            isEditing = false;
+        }
+        else
+        {
+            EmployeeService.AddEmployee(newEmployee);
+            Console.WriteLine("Added");
+        }
+        
+        newEmployee = new Employee();
+        LoadEmployees();
+       
+    }
+
+    private void EditEmployee(Employee emp)
+    {
+        newEmployee = new Employee
+        {
+            Id = emp.Id,
+            Name = emp.Name,
+            Shift = emp.Shift,
+            Department = emp.Department
+        };
+
+        isEditing = true;
+    }
+
+    private void DeleteEmployee(int id)
+    {
+        EmployeeService.DeleteEmployee(id);
+        LoadEmployees();
+    }
+}
