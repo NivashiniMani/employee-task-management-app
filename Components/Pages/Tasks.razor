@@ -1,0 +1,99 @@
+﻿@page "/tasks"
+@rendermode InteractiveServer
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject ITaskService TaskService
+
+<h3>Task Management</h3>
+
+<select class="form-control mb-2" @bind="selectedStatus">
+    <option value="">All Status</option>
+    <option>Pending</option>
+    <option>In Progress</option>
+    <option>Completed</option>
+</select>
+
+<button class="btn btn-primary mb-3" @onclick="LoadTasks">Filter</button>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Employee</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in tasks)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.Status</td>
+                <td>@task.Employee?.Name</td>
+                <td>
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="() => DeleteTask(task.Id)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+
+<h5>Add Task</h5>
+
+<input class="form-control mb-2" @bind="newTask.Title" placeholder="Task Title" />
+
+<select class="form-control mb-2" @bind="newTask.Status">
+    <option>Pending</option>
+    <option>In Progress</option>
+    <option>Completed</option>
+</select>
+
+<select class="form-control mb-2" @bind="newTask.EmployeeId">
+    <option value="0">Select Employee</option>
+    @foreach (var emp in employees)
+    {
+        <option value="@emp.Id">@emp.Name</option>
+    }
+</select>
+
+<button class="btn btn-success" @onclick="AddTask">Add Task</button>
+
+@code {
+    private List<TaskItem> tasks = new();
+    private List<Employee> employees = new();
+    private TaskItem newTask = new() { Status = "Pending" };
+    private string selectedStatus = "";
+
+    protected override void OnInitialized()
+    {
+        employees = TaskService.GetEmployees();
+        LoadTasks();
+    }
+
+    private void LoadTasks()
+    {
+        tasks = TaskService.GetTasks(selectedStatus);
+    }
+
+    private void AddTask()
+    {
+        if (newTask.EmployeeId == 0)
+            return;
+
+        TaskService.AddTask(newTask);
+        newTask = new TaskItem { Status = "Pending" };
+        LoadTasks();
+    }
+
+    private void DeleteTask(int id)
+    {
+        TaskService.DeleteTask(id);
+        LoadTasks();
+    }
+}

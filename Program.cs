@@ -14,6 +14,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
+builder.Services.AddScoped<ITaskService, TaskService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
