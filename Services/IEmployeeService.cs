@@ -1,13 +1,14 @@
 ﻿using BlazorApp1.Models;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace BlazorApp1.Services
 {
     public interface IEmployeeService
     {
-        List<Employee> GetEmployees(String searchTerm, string shift);
-        void AddEmployee(Employee employee);
-        void DeleteEmployee(int id);
+        Task<List<Employee>> GetEmployees(string searchTerm, string shift);
+        Task AddEmployee(Employee employee);
+        Task DeleteEmployee(int id);
         Employee GetEmployeeById(int id);
-        void UpdateEmployee(Employee employee);
+        Task UpdateEmployee(Employee employee);
     }
 }

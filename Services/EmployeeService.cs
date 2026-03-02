@@ -1,5 +1,6 @@
 ﻿using BlazorApp1.Data;
 using BlazorApp1.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Services
 {
@@ -11,30 +12,31 @@ namespace BlazorApp1.Services
         {
             _context = context; 
         }
-        public void AddEmployee(Employee employee)
+        public async Task AddEmployee(Employee employee)
         {
-            _context.Employees.Add(employee);
-            _context.SaveChanges();
+            await _context.Employees.AddAsync(employee);
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteEmployee(int id)
+        public async Task DeleteEmployee(int id)
         {
-            var emp = _context.Employees.Find(id);
+            var emp = await _context.Employees.FindAsync(id);
             if (emp != null)
             {
                 _context.Employees.Remove(emp);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
+
 
         public Employee GetEmployeeById(int id)
         {
             return _context.Employees.Find(id);
         }
 
-        public void UpdateEmployee(Employee employee)
+        public async Task UpdateEmployee(Employee employee)
         {
-            var existingEmployee = _context.Employees.Find(employee.Id);
+            var existingEmployee = await _context.Employees.FindAsync(employee.Id);
 
             if (existingEmployee != null)
             {
@@ -42,11 +44,12 @@ namespace BlazorApp1.Services
                 existingEmployee.Shift = employee.Shift;
                 existingEmployee.Department = employee.Department;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public List<Employee> GetEmployees(string searchTerm, string shift)
+
+        public async Task<List<Employee>> GetEmployees(string searchTerm, string shift)
         {
             var query = _context.Employees.AsQueryable();
 
@@ -60,7 +63,7 @@ namespace BlazorApp1.Services
                 query = query.Where(e => e.Shift == shift);
             }
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
     }
 }

@@ -5,11 +5,15 @@ namespace BlazorApp1.Models
     public class Employee
     {
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Employee name is required")]
+        [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Shift is required")]
         public string Shift { get; set; } // Morning / Afternoon / Night
-        public string? Department { get; set; }
+        [Required(ErrorMessage = "Department is required")]
+        [StringLength(50, ErrorMessage = "Department cannot exceed 50 characters")]
+        public string Department { get; set; }
+        
         public ICollection<TaskItem>? Tasks { get; set; }
     }
 }
