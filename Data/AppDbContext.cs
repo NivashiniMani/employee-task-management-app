@@ -9,6 +9,7 @@ namespace BlazorApp1.Data
         {
         }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<TaskItem> Tasks { get; set; }
         public DbSet<TaskItem> TaskItems { get; set; }
 
     }

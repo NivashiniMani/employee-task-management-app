@@ -8,6 +8,8 @@ namespace BlazorApp1.Services
         Task<List<Employee>> GetEmployees(string searchTerm, string shift);
         Task AddEmployee(Employee employee);
         Task DeleteEmployee(int id);
+
+        Task<int> GetTotalEmployeesAsync();
         Employee GetEmployeeById(int id);
         Task UpdateEmployee(Employee employee);
     }

@@ -1,0 +1,122 @@
+﻿@page "/dashboard"
+
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+
+@inject IEmployeeService EmployeeService
+@inject ITaskService TaskService
+
+<h3 class="mb-4">Dashboard</h3>
+
+@if (isLoading)
+{
+    <p>Loading dashboard data...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Total Employees</h5>
+                <h3>@totalEmployees</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Total Tasks</h5>
+                <h3>@totalTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Pending Tasks</h5>
+                <h3>@pendingTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Completed Tasks</h5>
+                <h3>@completedTasks</h3>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Morning Shift Tasks</h6>
+                    <h4>@morningTasks</h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Evening Shift Tasks</h6>
+                    <h4>@eveningTasks</h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Night Shift Tasks</h6>
+                    <h4>@nightTasks</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <h6>Completion %</h6>
+                    <h3>@completionPercentage.ToString("0.##")%</h3>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+}
+
+@code {
+    private int totalEmployees;
+    private int totalTasks;
+    private int pendingTasks;
+    private int completedTasks;
+    private bool isLoading = true;
+
+    private int morningTasks;
+    private int eveningTasks;
+    private int nightTasks;
+
+    private double completionPercentage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardData();
+    }
+
+    private async Task LoadDashboardData()
+    {
+        isLoading = true;
+
+        totalEmployees = await EmployeeService.GetTotalEmployeesAsync();
+        totalTasks = await TaskService.GetTotalTasksAsync();
+        pendingTasks = await TaskService.GetPendingTasksAsync();
+        completedTasks = await TaskService.GetCompletedTasksAsync();
+
+        isLoading = false;
+
+
+        morningTasks = await TaskService.GetTasksCountByShiftAsync("Morning");
+        eveningTasks = await TaskService.GetTasksCountByShiftAsync("Evening");
+        nightTasks = await TaskService.GetTasksCountByShiftAsync("Night");
+
+
+        completionPercentage = totalTasks == 0 ? 0 : ((double)completedTasks / totalTasks) * 100;
+
+
+    }
+}

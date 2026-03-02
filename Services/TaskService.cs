@@ -1,6 +1,7 @@
 ﻿using BlazorApp1.Data;
 using BlazorApp1.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BlazorApp1.Services
 {
@@ -44,6 +45,30 @@ namespace BlazorApp1.Services
                 _context.TaskItems.Remove(task);
                 _context.SaveChanges();
             }
+        }
+
+        public async Task<int> GetTotalTasksAsync()
+        {
+            return await _context.Tasks.CountAsync();
+        }
+
+        public async Task<int> GetPendingTasksAsync()
+        {
+            return await _context.Tasks
+                .Where(t => t.Status == "Pending")
+                .CountAsync();
+        }
+
+        public async Task<int> GetCompletedTasksAsync()
+        {
+            return await _context.Tasks
+                .Where(t => t.Status == "Completed")
+                .CountAsync();
+        }
+
+        public async Task<int> GetTasksCountByShiftAsync(string shift)
+        {
+            return await _context.Tasks.Where(t => t.Employee.Shift == shift).CountAsync();
         }
 
     }

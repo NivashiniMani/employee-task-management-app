@@ -65,5 +65,10 @@ namespace BlazorApp1.Services
 
             return await query.ToListAsync();
         }
+
+        public async Task<int> GetTotalEmployeesAsync()
+        {
+            return await _context.Employees.CountAsync();
+        }
     }
 }
