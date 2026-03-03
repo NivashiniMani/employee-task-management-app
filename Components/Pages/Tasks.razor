@@ -3,6 +3,7 @@
 @using BlazorApp1.Models
 @using BlazorApp1.Services
 @inject ITaskService TaskService
+@inject IJSRuntime JS
 
 <h3>Task Management</h3>
 
@@ -29,7 +30,11 @@
         {
             <tr>
                 <td>@task.Title</td>
-                <td>@task.Status</td>
+                <td>
+                    <span class="badge @(GetStatusBadge(task.Status))">
+                        @task.Status
+                    </span>
+                </td>
                 <td>@task.Employee?.Name</td>
                 <td>
                     <button class="btn btn-danger btn-sm"
@@ -91,9 +96,28 @@
         LoadTasks();
     }
 
-    private void DeleteTask(int id)
+    private async Task DeleteTask(int id)
     {
-        TaskService.DeleteTask(id);
-        LoadTasks();
+        bool confirmed = await JS.InvokeAsync<bool>(
+            "confirm",
+            "Are you sure you want to delete this task?"
+        );
+
+        if (confirmed)
+        {
+            TaskService.DeleteTask(id);
+            LoadTasks();
+        }
+    }
+
+    private string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning text-dark",
+            "In Progress" => "bg-info text-white",
+            "Completed" => "bg-success text-white",
+            _ => "bg-secondary"
+        };
     }
 }

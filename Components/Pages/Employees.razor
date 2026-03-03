@@ -48,7 +48,11 @@
             {
                 <tr>
                     <td>@emp.Name</td>
-                    <td>@emp.Shift</td>
+                    <td>
+                        <span class="badge @(GetShiftBadge(emp.Shift))">
+                            @emp.Shift
+                        </span>
+                    </td>
                     <td>@emp.Department</td>
                     <td>
                         <button class="btn btn-warning btn-sm me-2"
@@ -210,5 +214,16 @@
             await EmployeeService.DeleteEmployee(id);
             await LoadEmployees();
         }
+    }
+
+    private string GetShiftBadge(string shift)
+    {
+        return shift switch
+        {
+            "Morning" => "bg-warning text-dark",
+            "Evening" => "bg-info text-white",
+            "Night" => "bg-dark text-white",
+            _ => "bg-secondary"
+        };
     }
 }
