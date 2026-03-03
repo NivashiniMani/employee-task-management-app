@@ -5,7 +5,11 @@ namespace BlazorApp1.Services
 {
     public interface IEmployeeService
     {
-        Task<List<Employee>> GetEmployees(string searchTerm, string shift);
+        Task<PagedResult<Employee>> GetEmployeesAsync(
+            string searchTerm,
+            string shift,
+            int pageNumber,
+            int pageSize);
         Task AddEmployee(Employee employee);
         Task DeleteEmployee(int id);
 
