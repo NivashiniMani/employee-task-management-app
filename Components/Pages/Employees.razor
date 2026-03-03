@@ -251,4 +251,33 @@
             await LoadEmployees();
         }
     }
+
+    private async Task NextPage()
+    {
+        if (pageNumber < totalPages)
+        {
+            pageNumber++;
+            await LoadEmployees();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadEmployees();
+        }
+    }
+
+    private string GetShiftBadge(string shift)
+    {
+        return shift switch
+        {
+            "Morning" => "bg-warning text-dark",
+            "Evening" => "bg-info text-dark",
+            "Night" => "bg-dark text-white",
+            _ => "bg-secondary"
+        };
+    }
 }
