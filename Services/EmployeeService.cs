@@ -49,22 +49,41 @@ namespace BlazorApp1.Services
         }
 
 
-        public async Task<List<Employee>> GetEmployees(string searchTerm, string shift)
+        public async Task<PagedResult<Employee>> GetEmployeesAsync(
+               string searchTerm,
+               string shift,
+               int pageNumber,
+               int pageSize)
         {
             var query = _context.Employees.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = query.Where(e => e.Name.Contains(searchTerm));
             }
 
-            if (!string.IsNullOrEmpty(shift))
+            if (!string.IsNullOrWhiteSpace(shift))
             {
                 query = query.Where(e => e.Shift == shift);
             }
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+
+            var employees = await query
+                .OrderBy(e => e.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Employee>
+            {
+                Items = employees,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<int> GetTotalEmployeesAsync()
         {
